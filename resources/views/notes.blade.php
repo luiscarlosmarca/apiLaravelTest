@@ -19,22 +19,30 @@
                           <!--Crear nueva nota. componente -->
                           <!-- Select que muestra el array de categories, de igual forma esta enlazado con la nueva nota en el boton.-->
                           <td><select-category :categories="categories" :id.sync="new_note.category_id"></select-category></td>
-                          <td><input type="text" v-model="new_note.note" class="form-control"></td>
                           <td>
-                              <a href="#" @click="createNote()">
+
+                            <input type="text" v-model="new_note.note" class="form-control">
+                            <ul v-if="errors.length" class="text-danger"><!-- si hay errores mostrar esta lista-->
+                               <li v-for="error in errors">@{{error}}  </li><!--importante colocar este arroba para que no salga un error de interpolacion de json y blade -->
+                            </ul>
+
+                          </td>
+                          
+                          <td>
+                              <a href="#" @@click.prevent ="createNote()">
                                   <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                               </a>
                           </td>
                       </tr>
                     </table>
-                    <pre>{{ $data | json }}</pre><!-- muestra los datos en json. -->
+                    <pre>@{{ $data | json }}</pre><!-- muestra los datos en json. -->
                 </div>
       </div>
 
   @endsection
 
   @section('scripts')
-
+    @verbatim <!-- Etiqueta para blade lea json-->
      <!-- Categoria -->
       <template id="select_category_tpl">
         <select v-model="id" class="form-control"><!--se enlaza al id que se pasa por la etiqueta del componente -->
@@ -68,13 +76,25 @@
                 <!--se pasa por las propiedades la lista de categorias y el id de la notas -->
                     <select-category :categories="categories" :id.sync="note.category_id"></select-category>
                 </td>
-                <td><input type="text" v-model="note.note" class="form-control"></td>
+                <td>
+                  <input type="text" v-model="note.note" class="form-control">
+                  <ul v-if="errors.length" class="text-danger">
+                               <li v-for="error in errors">{{error}}  </li>
+                            </ul>
+
+                </td>
                 <td><a href="#" @click="update()"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
             </template>
         </tr>
       </template> 
-
+    @endverbatim
+      
+      <script src="http://code.jquery.com/jquery-2.2.4.js"
+        integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+        crossorigin="anonymous"></script>
       <script src="{{ url('js/vue.js') }}"></script>
-      <script src="{{ url('js/  notes.js') }}"></script>
+      <script src="{{ url('js/notes.js') }}"></script>
+
+      <!--Si el proyecto ya usa la jquery ps, usamos esta forma, sino la otra que con un componente de vue -->
 
   @endsection

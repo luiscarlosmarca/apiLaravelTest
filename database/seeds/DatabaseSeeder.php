@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
     {
           //$this->call(CategoryTableSeeder::class);
 
-          // factory('App\Category', 50)->create();
-          //factory('App\Note', 50)->create();
+          factory('App\Category', 5)->create();
+          factory('App\Note', 5)->create();
          // $this->call(NoteTableSeeder::class);
     }
 }

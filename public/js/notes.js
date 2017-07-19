@@ -29,7 +29,8 @@ Vue.component('note-row', {
     props: ['note', 'categories'],
     data: function() { 
         return {
-            editing: false
+            editing: false,
+            errors:[]//array donde vasmo a guardar los errores de la edición.
         };
     },
     methods: {
@@ -40,7 +41,28 @@ Vue.component('note-row', {
             this.editing = true;
         },
         update: function () {
-            this.editing = false;
+
+            this.errors =[];
+            $.ajax({
+
+                url:'/api/v1/notes/'+this.note.id,
+                method:'PUT',
+                dataType: 'json',
+                data: this.note,
+                success: function(data){
+
+                    this.$parent.notes.$set(this.$parent.notes.indexOf(this.note),data.note);//tomamos el valor que tra el componente y lo pasamos  por data a la url
+                    // que esta el propiedads con el valor set de vue, y usando js.
+                    this.editing=false; //para quitar la edición solo si la guardad fue exitosa, y asi poder mostrar los errores de las validaciones.
+
+                }.bind(this),//una funcion de vue para decir q todo es this.
+                
+                error:function(jqXHR){
+
+                    this.errors=jqXHR.responseJSON.errors; // para guardar los errores en este array y mostrarlos en la edición.
+                }.bind(this)
+            });
+            
         }
     }
 });
@@ -52,24 +74,8 @@ var vm = new Vue({
             note: '',
             category_id: ''
         },
-        notes: [
-            {
-                note: 'Laravel 5.1 es LTS',
-                category_id: 1
-            },
-            {
-                note: 'v-for es la directiva que utilizamos para iterar una lista',
-                category_id: 2
-            },
-            {
-                note: '@click se utiliza como un alias de v-on:click',
-                category_id: 2
-            },
-            {
-                note: 'Regístrate hoy en styde.net y obtén acceso a todos nuestros cursos',
-                category_id: 3
-            }
-        ],
+        notes: [],//AQUI VAMOS A TENER EL CONTENIDO DINAMICAMENTE, la vamos usar con jquery y un componente de Vue resuerce.
+        errors:[],//propiedad donde vamos almacenar en cada iteracion del metodo de create note los errores de validación.
         categories: [
             {
                 id: 1,
@@ -85,9 +91,35 @@ var vm = new Vue({
             }
         ]
     },
+    ready: function () {
+        $.getJSON('/api/v1/notes',[], function (notes) {//llama la url y esta lee  asigna a esta variable
+            
+            vm.notes = notes; // vm hace referencia a la variable que contiene todo le Modelo de Vue.
+
+        });
+    },
     methods: {
         createNote: function () {
-            this.notes.push(this.new_note);
+
+            this.errors = []; //limpiar el array de errores.
+
+            $.ajax({ //peticion ajax para guardar la nota
+
+                url: 'api/v1/notes', //se pasa la url, previamente creada en la route.php
+                method: 'POST', //metodo post de guardar
+                data: this.new_note,//data que voy a enviar al servidor
+                dataType: 'json', //va recibir datos de tipo json
+                success: function(data){// si se guarda exitosamente se ejecutara esta funcion que es la que guarda.
+
+                    vm.notes.push(data.note) ; 
+                },
+                error: function(jqXHR){
+                    vm.errors=jqXHR.responseJSON.errors;
+                }
+
+            });
+
+           
 
             this.new_note = {note: '', category_id: ''};
         }
