@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* 
 |--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
@@ -14,3 +14,17 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('name', function(){
+	return \App\User::first()->name;
+});
+
+Route::resource('notes', 'Api\NoteController',[
+
+	'parameters' => [
+
+			'notes' => 'note'
+		]
+
+	]);

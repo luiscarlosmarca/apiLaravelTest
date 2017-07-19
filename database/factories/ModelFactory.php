@@ -18,4 +18,19 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'password' => bcrypt(str_random(10)),
         'remember_token' => str_random(10),
     ];
+}); 
+
+$factory->define(App\Category::class, function(faker\Generator $faker){
+	return [ 
+		'name' => $faker->sentence
+	];
+
 });
+//crear notas automaticamente
+$factory->define(App\Note::class, function(Faker\Generator $faker){
+
+	return [
+	 'note' => $faker->paragraph
+	];
+});
+ 
