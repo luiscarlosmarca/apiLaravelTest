@@ -28,3 +28,9 @@ Route::resource('notes', 'Api\NoteController',[
 		]
 
 	]);
+
+Route::get('notes',function() {
+	
+	return view('notes');
+
+});
