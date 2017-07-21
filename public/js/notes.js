@@ -30,39 +30,74 @@ Vue.component('note-row', {
     data: function() { 
         return {
             editing: false,
-            errors:[]//array donde vasmo a guardar los errores de la edición.
+            errors:[],//array donde vasmo a guardar los errores de la edición.
+            draf:{}//pichu donde va estar el input guardado para mostrarlo en caso de cancelar o guardarlo 
         };
     },
     methods: {
-        remove: function () {
-            this.$parent.notes.$remove(this.note);
-        },
+       
         edit: function () {
+            this.errors =[];
+            this.draf=JSON.parse(JSON.stringify(this.note)); //clonar el objeto, para la funcion de cancelar y no perder los datos del input
             this.editing = true;
         },
+
+        cancel: function(){
+            this.editing = false;  
+        }, 
         update: function () {
 
             this.errors =[];
-            $.ajax({
 
-                url:'/api/v1/notes/'+this.note.id,
-                method:'PUT',
-                dataType: 'json',
-                data: this.note,
-                success: function(data){
+            this.$http.put('/api/v1/notes/'+this.note.id,this.draf).then(function(response){
 
-                    this.$parent.notes.$set(this.$parent.notes.indexOf(this.note),data.note);//tomamos el valor que tra el componente y lo pasamos  por data a la url
-                    // que esta el propiedads con el valor set de vue, y usando js.
-                    this.editing=false; //para quitar la edición solo si la guardad fue exitosa, y asi poder mostrar los errores de las validaciones.
+                this.$parent.notes.$set(this.$parent.notes.indexOf(this.note),response.data.note);
+            },function(response){
 
-                }.bind(this),//una funcion de vue para decir q todo es this.
-                
-                error:function(jqXHR){
+                this.errors=response.data.errors;  
 
-                    this.errors=jqXHR.responseJSON.errors; // para guardar los errores en este array y mostrarlos en la edición.
-                }.bind(this)
             });
+            // ***** JQUERY **** ///
+            // $.ajax({
+
+            //     url:'/api/v1/notes/'+this.note.id,
+            //     method:'PUT',
+            //     dataType: 'json',
+            //     data: this.draf,
+            //     success: function(data){
+
+            //         this.$parent.notes.$set(this.$parent.notes.indexOf(this.note),data.note);//tomamos el valor que tra el componente y lo pasamos  por data a la url
+            //         // que esta el propiedads con el valor set de vue, y usando js.
+            //         this.editing=false; //para quitar la edición solo si la guardad fue exitosa, y asi poder mostrar los errores de las validaciones.
+
+            //     }.bind(this),//una funcion de vue para decir q todo es this.
+                
+            //     error:function(jqXHR){
+
+            //         this.errors=jqXHR.responseJSON.errors; // para guardar los errores en este array y mostrarlos en la edición.
+            //     }.bind(this)
+            // });
             
+        },
+         remove: function () {
+
+            this.$http.delete('/api/v1/notes/'+this.note.id).then(function(response){
+
+                this.$parent.notes.$remove(this.note);
+
+            });
+             // ***** JQUERY **** ///
+            // $.ajax({
+
+            //     url:'/api/v1/notes/'+ this.note.id,
+            //     method: 'DELETE',
+            //     dataType: 'json',
+            //     success: function(data){
+            //         this.$parent.notes.$remove(this.note);
+
+            //     }.bind(this)
+            // });
+
         }
     }
 });
@@ -76,6 +111,7 @@ var vm = new Vue({
         },
         notes: [],//AQUI VAMOS A TENER EL CONTENIDO DINAMICAMENTE, la vamos usar con jquery y un componente de Vue resuerce.
         errors:[],//propiedad donde vamos almacenar en cada iteracion del metodo de create note los errores de validación.
+        
         categories: [
             {
                 id: 1,
@@ -92,17 +128,34 @@ var vm = new Vue({
         ]
     },
     ready: function () {
-        $.getJSON('/api/v1/notes',[], function (notes) {//llama la url y esta lee  asigna a esta variable
-            
-            vm.notes = notes; // vm hace referencia a la variable que contiene todo le Modelo de Vue.
+        
+        this.$http.get('api/v1/notes').then(function(response){
+
+            this.notes=response.data; //no hay necesidad de usar la variable vm, pues este this llama al mismo obj
 
         });
+
+        // ***** JQUERY **** ///
+        //$.getJSON('/api/v1/notes',[], function (notes) {//llama la url y esta lee  asigna a esta variable
+        //vm.notes = notes; // vm hace referencia a la variable que contiene todo le Modelo de Vue.
+        //});
     },
     methods: {
         createNote: function () {
 
             this.errors = []; //limpiar el array de errores.
 
+            // this.$http.post('/api/v1/notes', this.new_note).then(function (response) {
+                
+            //     this.notes.push(response.data.note);
+ 
+            // }, function(response){
+
+            //     this.errors=response.data.errors;
+
+            // }); //posible error.
+
+            // ***** JQUERY **** ///
             $.ajax({ //peticion ajax para guardar la nota
 
                 url: 'api/v1/notes', //se pasa la url, previamente creada en la route.php
@@ -118,9 +171,7 @@ var vm = new Vue({
                 }
 
             });
-
            
-
             this.new_note = {note: '', category_id: ''};
         }
     },
