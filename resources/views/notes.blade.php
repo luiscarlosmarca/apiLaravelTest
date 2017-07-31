@@ -58,7 +58,7 @@
 
       <template id="note_row_tpl"><!--Esta pichu template representa toda una nota, la cual va estar ligada al 
       componente este que va mejorar el codigo -->
-        <tr>
+        <tr class="animated" transition="bounceOutRight">
             <template v-if="! editing">
                 <td>{{ note.category_id | category }}</td>
                 <td>{{ note.note }}</td>
@@ -102,14 +102,25 @@
       </template> 
     @endverbatim
       
-      <script src="http://code.jquery.com/jquery-2.2.4.js"
+      {{-- <script src="http://code.jquery.com/jquery-2.2.4.js"
         integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
-        crossorigin="anonymous"></script>
-      <script src="{{ url('js/vue.js') }}"></script>
+        crossorigin="anonymous"></script> --}}
 
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.3.4/vue-resource.js"></script><!--componente mas liviano para usar ajax, con eso podemos quitar el scrip de jquery, para el ejemplo lo voy a dejar. -->
-      <script src="{{ url('js/notes.js') }}"></script>
+      {{-- <script src="{{ url('js/vue.js') }}"></script> --}}
+
+     {{--  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.1/vue-resource.js"></script> --}}<!--componente mas liviano para usar ajax, con eso podemos quitar el scrip de jquery, para el ejemplo lo voy a dejar. -->
+
+     {{--  <script src="{{ url('js/notes.js') }}"></script> --}}
 
       <!--Si el proyecto ya usa la jquery ps, usamos esta forma, sino la otra que con un componente de vue -->
+
+
+{{--*********************************************--}}
+
+{{--Arrriba se comento todo, por q ahora usamos gulp y vamos a instertar los componentes y vue con browserfy y elixer larvel--}}     
+
+ <script type="text/javascript" src="js/main.js"></script> 
+
+<link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"> <!-- animate css para efectos.-->
 
   @endsection

@@ -1,3 +1,8 @@
+
+var Vue = require('vue'); //incluir esta library de esta forma. 
+
+Vue.use(require('vue-resource'));
+
 function findById(items, id) {
     for (var i in items) {
         if (items[i].id == id) {
@@ -142,24 +147,10 @@ var vm = new Vue({
 
         });
 
-
-
         // ***** JQUERY **** ///
         //$.getJSON('/api/v1/notes',[], function (notes) {//llama la url y esta lee  asigna a esta variable
         //vm.notes = notes; // vm hace referencia a la variable que contiene todo le Modelo de Vue.
         //});
-
-
-
-        // Vue.http.interceptors.push(function(requuest,next){
-
-        //     var token = document.getElementById('token').getAttribute('content');
-
-        //     alert(token);
-
-            
-        //     })
-        // })
     },
     methods: {
         createNote: function () {
